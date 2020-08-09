@@ -22,7 +22,7 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = SEQUENCE)
-    private Long id;
+    private Long commentId;
 
     @NotEmpty
     private String text;

@@ -22,7 +22,7 @@ public class Subreddit {
 
     @Id
     @GeneratedValue(strategy = SEQUENCE)
-    private Long id;
+    private Long subredditId;
 
     @NotBlank(message = "Community name is required")
     private String name;
