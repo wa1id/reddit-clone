@@ -2,6 +2,7 @@ package com.example.springredditclone.service;
 
 import com.example.springredditclone.dto.SubredditDto;
 import com.example.springredditclone.exceptions.SubredditNotFoundException;
+import com.example.springredditclone.mapper.SubredditMapper;
 import com.example.springredditclone.model.Subreddit;
 import com.example.springredditclone.repository.SubredditRepository;
 import lombok.AllArgsConstructor;
@@ -21,11 +22,12 @@ public class SubredditService {
 
     private final SubredditRepository subredditRepository;
     private final AuthService authService;
+    private final SubredditMapper subredditMapper;
 
     @Transactional
     public SubredditDto save(SubredditDto subredditDto) {
-        Subreddit savedSubreddit = subredditRepository.save(mapToSubreddit(subredditDto));
-        subredditDto.setId(savedSubreddit.getSubredditId());
+        Subreddit savedSubreddit = subredditRepository.save(subredditMapper.mapDtoToSubreddit(subredditDto));
+        subredditDto.setSubredditId(savedSubreddit.getSubredditId());
         return subredditDto;
     }
 
@@ -33,7 +35,7 @@ public class SubredditService {
     public List<SubredditDto> getAll() {
         return subredditRepository.findAll()
                 .stream()
-                .map(this::mapToDto)
+                .map(subredditMapper::mapSubredditToDto)
                 .collect(toList());
     }
 
@@ -46,7 +48,7 @@ public class SubredditService {
 
     private SubredditDto mapToDto(Subreddit subreddit) {
         return SubredditDto.builder()
-                .id(subreddit.getSubredditId())
+                .subredditId(subreddit.getSubredditId())
                 .name(subreddit.getName())
                 .description(subreddit.getDescription())
                 .numberOfPosts(subreddit.getPosts().size())
