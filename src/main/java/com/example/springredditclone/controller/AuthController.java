@@ -1,5 +1,7 @@
 package com.example.springredditclone.controller;
 
+import com.example.springredditclone.dto.AuthenticationResponse;
+import com.example.springredditclone.dto.LoginRequest;
 import com.example.springredditclone.dto.RegisterRequest;
 import com.example.springredditclone.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -13,6 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+
+    @PostMapping("login")
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
+    }
 
     @PostMapping("signup")
     public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest) {
