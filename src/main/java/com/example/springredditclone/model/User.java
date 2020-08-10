@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.time.Instant;
@@ -23,13 +24,15 @@ public class User {
     private Long userId;
 
     @NotBlank(message = "Username is required")
+    @Column(unique = true)
     private String username;
 
     @NotBlank(message = "Password is required")
     private String password;
 
-    @Email
+    @Email(message = "Email should be valid") // TODO: not working
     @NotBlank(message = "Email is required")
+    @Column(unique = true)
     private String email;
 
     private Instant created;
