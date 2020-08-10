@@ -21,7 +21,6 @@ import static java.util.stream.Collectors.*;
 public class SubredditService {
 
     private final SubredditRepository subredditRepository;
-    private final AuthService authService;
     private final SubredditMapper subredditMapper;
 
     @Transactional
@@ -43,24 +42,6 @@ public class SubredditService {
     public SubredditDto getSubreddit(Long id) {
         Subreddit subreddit = subredditRepository.findById(id)
                 .orElseThrow(() -> new SubredditNotFoundException("Subreddit not found with id: " + id));
-        return mapToDto(subreddit);
-    }
-
-    private SubredditDto mapToDto(Subreddit subreddit) {
-        return SubredditDto.builder()
-                .subredditId(subreddit.getSubredditId())
-                .name(subreddit.getName())
-                .description(subreddit.getDescription())
-                .numberOfPosts(subreddit.getPosts().size())
-                .build();
-    }
-
-    private Subreddit mapToSubreddit(SubredditDto subredditDto) {
-        return Subreddit.builder()
-                .name(subredditDto.getName()) // "/r/"?
-                .description(subredditDto.getDescription())
-                .user(authService.getCurrentUser())
-                .createdDate(Instant.now())
-                .build();
+        return subredditMapper.mapSubredditToDto(subreddit);
     }
 }
