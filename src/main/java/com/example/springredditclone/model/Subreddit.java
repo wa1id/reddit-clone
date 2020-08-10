@@ -25,6 +25,7 @@ public class Subreddit {
     private Long subredditId;
 
     @NotBlank(message = "Community name is required")
+    @Column(unique = true)
     private String name;
 
     @NotBlank(message = "Description is required")

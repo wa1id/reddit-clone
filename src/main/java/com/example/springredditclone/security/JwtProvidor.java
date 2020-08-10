@@ -1,6 +1,7 @@
 package com.example.springredditclone.security;
 
 import com.example.springredditclone.exceptions.SpringRedditException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
@@ -59,5 +60,15 @@ public class JwtProvidor {
         } catch (KeyStoreException e) {
             throw new SpringRedditException("Exception occured while retrieving public key");
         }
+    }
+
+    public String getUsernameFromJwt(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getPublicKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
     }
 }
