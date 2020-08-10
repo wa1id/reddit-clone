@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.*;
 
 @Service
 @AllArgsConstructor
-@Transactional
 public class PostService {
 
     private final SubredditRepository subredditRepository;
@@ -32,13 +31,16 @@ public class PostService {
     private final AuthService authService;
     private final PostMapper postMapper;
 
+    @Transactional
     public void save(PostRequest postRequest) {
         Subreddit subreddit = subredditRepository.findByName(postRequest.getSubredditName())
                 .orElseThrow(() -> new SubredditNotFoundException("Did not find subreddit: " + postRequest.getSubredditName()));
 
         User currentUser = authService.getCurrentUser();
+        Post savedPost = postRepository.save(postMapper.map(postRequest, subreddit, currentUser));
 
-        postRepository.save(postMapper.map(postRequest, subreddit, currentUser));
+        subreddit.getPosts().add(savedPost);
+        subredditRepository.save(subreddit);
     }
 
     @Transactional(readOnly = true)

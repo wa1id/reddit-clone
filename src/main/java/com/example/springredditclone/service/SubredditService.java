@@ -3,6 +3,7 @@ package com.example.springredditclone.service;
 import com.example.springredditclone.dto.SubredditDto;
 import com.example.springredditclone.exceptions.SubredditNotFoundException;
 import com.example.springredditclone.mapper.SubredditMapper;
+import com.example.springredditclone.model.Post;
 import com.example.springredditclone.model.Subreddit;
 import com.example.springredditclone.model.User;
 import com.example.springredditclone.repository.SubredditRepository;
