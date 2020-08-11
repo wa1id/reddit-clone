@@ -16,7 +16,7 @@ import static javax.persistence.GenerationType.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "\"user\"") //user is a reserved word in Postgres so we need to escape te table name
+@Table(name = "\"user\"") //user is a reserved word in Postgres so we need to escape the table name
 public class User {
 
     @Id
