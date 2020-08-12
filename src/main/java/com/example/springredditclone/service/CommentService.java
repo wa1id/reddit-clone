@@ -12,6 +12,11 @@ import com.example.springredditclone.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
+
 @Service
 @AllArgsConstructor
 public class CommentService {
@@ -37,5 +42,14 @@ public class CommentService {
     private void sendCommentNotificationToOriginalPoster(User originalPoster, User commenter) {
         String message = mailContentBuilder.build(commenter.getUsername() + " posted a comment on your post.");
         mailService.sendMail(new NotificationEmail(commenter.getUsername() + " commented on your post", originalPoster.getEmail(), message));
+    }
+
+    public List<CommentsDto> getAllCommentsForPost(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+
+        return commentRepository.findByPost(post)
+                .stream()
+                .map(commentMapper::mapToDto).collect(toList());
     }
 }
