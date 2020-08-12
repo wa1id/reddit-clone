@@ -65,7 +65,7 @@ public class VoteService {
     }
 
     private void downvotePost(Post post) {
-        post.setVoteCount(post.getVoteCount() - DOWNVOTE.getDirection());
+        post.setVoteCount(post.getVoteCount() + DOWNVOTE.getDirection());
     }
 
     private Vote mapToVote(VoteDto voteDto, Post post) {
