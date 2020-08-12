@@ -31,8 +31,7 @@ public class VoteService {
 
         Post post = postRepository.findById(voteDto.getPostId())
                 .orElseThrow(() -> new PostNotFoundException("Post Not Found with ID - " + voteDto.getPostId()));
-        Vote voteByPostAndUser = voteRepository.findTopByPostAndUserOrderByVoteIdDesc(post, authService.getCurrentUser())
-        .orElseThrow(() -> new SpringRedditException("You have already " + voteType + "'d for this post"));
+        Optional<Vote> voteByPostAndUser = voteRepository.findTopByPostAndUserOrderByVoteIdDesc(post, authService.getCurrentUser());
 
         handleVote(voteByPostAndUser, voteType, post);
 
@@ -40,7 +39,7 @@ public class VoteService {
         postRepository.save(post);
     }
 
-    private void handleVote(Vote currentUserVote, VoteType clickedVote, Post post) {
+    private void handleVote(Optional<Vote> currentUserVote, VoteType clickedVote, Post post) {
         if (voteDoesNotExists(currentUserVote, clickedVote)) {
             if (upvoted(clickedVote)) {
                 upvotePost(post);
@@ -50,8 +49,8 @@ public class VoteService {
         }
     }
 
-    private boolean voteDoesNotExists(Vote currentUserVote, VoteType clickedVote) {
-        if (currentUserVote.getVoteType().equals(clickedVote)) {
+    private boolean voteDoesNotExists(Optional<Vote> currentUserVote, VoteType clickedVote) {
+        if (currentUserVote.isPresent() && currentUserVote.get().getVoteType().equals(clickedVote)) {
             throw new SpringRedditException("You have already " + clickedVote + "'d for this post");
         }
         return true;
