@@ -9,7 +9,9 @@ import com.example.springredditclone.model.Post;
 import com.example.springredditclone.model.User;
 import com.example.springredditclone.repository.CommentRepository;
 import com.example.springredditclone.repository.PostRepository;
+import com.example.springredditclone.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +27,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final AuthService authService;
+    private final UserRepository userRepository;
     private final CommentMapper commentMapper;
     private final MailContentBuilder mailContentBuilder;
     private final MailService mailService;
@@ -49,6 +52,15 @@ public class CommentService {
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
 
         return commentRepository.findByPost(post)
+                .stream()
+                .map(commentMapper::mapToDto).collect(toList());
+    }
+
+    public List<CommentsDto> getAllCommentsForUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->new UsernameNotFoundException(username + " not found"));
+
+        return commentRepository.findAllByUser(user)
                 .stream()
                 .map(commentMapper::mapToDto).collect(toList());
     }
