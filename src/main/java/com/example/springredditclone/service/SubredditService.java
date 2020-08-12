@@ -18,7 +18,6 @@ import static java.util.stream.Collectors.*;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class SubredditService {
 
     private final SubredditRepository subredditRepository;

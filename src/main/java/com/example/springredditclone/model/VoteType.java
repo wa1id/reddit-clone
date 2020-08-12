@@ -1,6 +1,7 @@
 package com.example.springredditclone.model;
 
 import com.example.springredditclone.exceptions.SpringRedditException;
+import com.example.springredditclone.exceptions.VoteNotFoundException;
 
 import java.util.Arrays;
 
@@ -17,7 +18,7 @@ public enum VoteType {
         return Arrays.stream(VoteType.values())
                 .filter(value -> value.getDirection().equals(direction))
                 .findAny()
-                .orElseThrow(() -> new SpringRedditException("Vote not found"));
+                .orElseThrow(() -> new VoteNotFoundException("Vote not found"));
     }
 
     public Integer getDirection() {
