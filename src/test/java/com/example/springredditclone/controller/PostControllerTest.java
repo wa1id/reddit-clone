@@ -38,16 +38,17 @@ public class PostControllerTest {
     private PostService postService;
 
     private PostResponse postResponse = null;
+    private PostRequest postRequest = null;
 
     @Before
     public void setup() {
         this.mock = MockMvcBuilders.standaloneSetup(new PostController(postService)).build();
-        postResponse = new PostResponse(1L, "postname", "url", "description", "test", "subreddit", 0, 0, "test", false, false);
+        postResponse = new PostResponse(1L, "postname", "url", "description", "username", "subreddit", 0, 0, "test", false, false);
+        postRequest = new PostRequest(1L, "postname", "subreddit", "url", "description");
     }
 
     @Test
     public void createPost() throws Exception{
-        PostRequest postRequest = new PostRequest(1L, "postname", "subreddit", "url", "description");
         given(postService.save(any(PostRequest.class))).willReturn(postRequest);
 
         mock.perform(MockMvcRequestBuilders.post("/api/posts")
@@ -77,7 +78,16 @@ public class PostControllerTest {
 
         mock.perform(MockMvcRequestBuilders.get("/api/posts/by-subreddit/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].subredditName").value("test"));
+                .andExpect(jsonPath("$[0].subredditName").value("subreddit"));
+    }
+
+    @Test
+    public void getPostsByUser_ShouldReturnPosts() throws Exception {
+        given(postService.getPostsByUsername("username")).willReturn(Collections.singletonList(postResponse));
+
+        mock.perform(MockMvcRequestBuilders.get("/api/posts/by-user/username"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].username").value("username"));
     }
 
     @Test
