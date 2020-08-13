@@ -64,7 +64,7 @@ public class PostControllerTest {
 
     @Test
     public void getPostById_ShouldReturnOnePost() throws Exception {
-        given(postService.getPost(1L)).willReturn(postResponse);
+        given(postService.getPostById(1L)).willReturn(postResponse);
 
         mock.perform(MockMvcRequestBuilders.get("/api/posts/1"))
                 .andExpect(status().isOk())
@@ -92,7 +92,7 @@ public class PostControllerTest {
 
     @Test
     public void getPostById_NotFound() throws Exception {
-        given(postService.getPost(anyLong())).willThrow(new PostNotFoundException(anyString()));
+        given(postService.getPostById(anyLong())).willThrow(new PostNotFoundException(anyString()));
 
         mock.perform(MockMvcRequestBuilders.get("/api/posts/1"))
                 .andExpect(status().isNotFound());

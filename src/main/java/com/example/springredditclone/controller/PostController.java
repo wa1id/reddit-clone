@@ -2,6 +2,7 @@ package com.example.springredditclone.controller;
 
 import com.example.springredditclone.dto.PostRequest;
 import com.example.springredditclone.dto.PostResponse;
+import com.example.springredditclone.model.Post;
 import com.example.springredditclone.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class PostController {
 
     @GetMapping("{id}")
     public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
-        return status(HttpStatus.OK).body(postService.getPost(id));
+        return status(HttpStatus.OK).body(postService.getPostById(id));
     }
 
     @GetMapping("by-subreddit/{id}")
