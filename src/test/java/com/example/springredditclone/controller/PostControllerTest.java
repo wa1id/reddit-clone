@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collections;
+
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -33,14 +35,17 @@ public class PostControllerTest {
     @MockBean
     private PostService postService;
 
+    private PostResponse postResponse = null;
+
     @Before
     public void setup() {
         this.mock = MockMvcBuilders.standaloneSetup(new PostController(postService)).build();
+        postResponse = new PostResponse(1L, "test", "test", "test", "test", "test", 0, 0, "test", false, false);
     }
 
     @Test
     public void getPostById_ShouldReturnOnePost() throws Exception {
-        given(postService.getPost(1L)).willReturn(new PostResponse(1L, "test", "test", "test", "test", "test", 0, 0, "test", false, false));
+        given(postService.getPost(1L)).willReturn(postResponse);
 
         mock.perform(MockMvcRequestBuilders.get("/api/posts/1"))
                 .andExpect(status().isOk())
@@ -49,7 +54,16 @@ public class PostControllerTest {
     }
 
     @Test
-    public void getPostById_notFound() throws Exception {
+    public void getPostsInSubreddit_ShouldReturnPosts() throws Exception {
+        given(postService.getPostsBySubreddit(1L)).willReturn(Collections.singletonList(postResponse));
+
+        mock.perform(MockMvcRequestBuilders.get("/api/posts/by-subreddit/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].subredditName").value("test"));
+    }
+
+    @Test
+    public void getPostById_NotFound() throws Exception {
         given(postService.getPost(anyLong())).willThrow(new PostNotFoundException(anyString()));
 
         mock.perform(MockMvcRequestBuilders.get("/api/posts/1"))
