@@ -12,6 +12,7 @@ import com.example.springredditclone.repository.PostRepository;
 import com.example.springredditclone.repository.SubredditRepository;
 import com.example.springredditclone.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +32,7 @@ public class PostService {
     private final PostMapper postMapper;
 
     @Transactional
-    public void save(PostRequest postRequest) {
+    public PostRequest save(PostRequest postRequest) {
         Subreddit subreddit = subredditRepository.findByName(postRequest.getSubredditName())
                 .orElseThrow(() -> new SubredditNotFoundException("Did not find subreddit: " + postRequest.getSubredditName()));
 
@@ -40,6 +41,8 @@ public class PostService {
 
         subreddit.getPosts().add(savedPost);
         subredditRepository.save(subreddit);
+
+        return postRequest;
     }
 
     @Transactional(readOnly = true)

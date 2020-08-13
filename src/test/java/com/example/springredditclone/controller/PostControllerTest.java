@@ -1,14 +1,17 @@
 package com.example.springredditclone.controller;
 
+import com.example.springredditclone.dto.PostRequest;
 import com.example.springredditclone.dto.PostResponse;
 import com.example.springredditclone.exceptions.PostNotFoundException;
 import com.example.springredditclone.service.PostService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -18,8 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,7 +42,23 @@ public class PostControllerTest {
     @Before
     public void setup() {
         this.mock = MockMvcBuilders.standaloneSetup(new PostController(postService)).build();
-        postResponse = new PostResponse(1L, "test", "test", "test", "test", "test", 0, 0, "test", false, false);
+        postResponse = new PostResponse(1L, "postname", "url", "description", "test", "subreddit", 0, 0, "test", false, false);
+    }
+
+    @Test
+    public void createPost() throws Exception{
+        PostRequest postRequest = new PostRequest(1L, "postname", "subreddit", "url", "description");
+        given(postService.save(any(PostRequest.class))).willReturn(postRequest);
+
+        mock.perform(MockMvcRequestBuilders.post("/api/posts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(postRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("postId").value(1L))
+                .andExpect(jsonPath("postName").value("postname"))
+                .andExpect(jsonPath("subredditName").value("subreddit"))
+                .andExpect(jsonPath("url").value("url"))
+                .andExpect(jsonPath("description").value("description"));
     }
 
     @Test
@@ -68,5 +86,13 @@ public class PostControllerTest {
 
         mock.perform(MockMvcRequestBuilders.get("/api/posts/1"))
                 .andExpect(status().isNotFound());
+    }
+
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
